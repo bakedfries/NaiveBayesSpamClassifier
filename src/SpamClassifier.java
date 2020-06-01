@@ -13,8 +13,8 @@ public class SpamClassifier implements InterfaceClassifier {
 
 	public int spamFiles = 0;
 	public int hamFiles = 0;
-	public double cutoff = 0;
-	public final double e = 2.7182818284590455;
+	public double cutoff = 0; //threshold for spam classification
+	public final double e = 2.7182818284590455; //helps with log based calculations
 	
 	public HashMap<String, Integer> spamStore = new HashMap<String, Integer>();
 	public HashMap<String, Integer> hamStore= new HashMap<String, Integer>();
@@ -65,7 +65,7 @@ public class SpamClassifier implements InterfaceClassifier {
 		return ((double)spamGivenWord/(spamGivenWord+hamGivenWord));
 	}
 	
-	public double probHamGivenWord(String word) {
+	public double probHamGivenWord(String word) { 
 		double spamGivenWord;
 		double hamGivenWord;
 		spamGivenWord = ((double)getNumOccInSpam(word));
@@ -75,33 +75,29 @@ public class SpamClassifier implements InterfaceClassifier {
 	
 
 	@SuppressWarnings("resource")
-	public double probSpamGivenEmail(InputStream in) {
-		Scanner c = new Scanner(in);
+	public double probSpamGivenEmail(InputStream in) { //takes in the textfiles 
+		Scanner c = new Scanner(in); //if checking with string aka words and not txt files, use 'convert' method 
 		double p = 0.0;
 		double sum = 0.0;
 		while(c.hasNext()) {				
 			String s = c.next();
 			p = probSpamGivenWord(s);
-			if ((!spamStore.containsKey(s)) ||(!hamStore.containsKey(s)))
+			if ((!spamStore.containsKey(s)) ||(!hamStore.containsKey(s))) //ignoring unseen words altogether 
 				continue;
-			/*if (probSpamGivenWord(s) > 0.995)
+			/*if (probSpamGivenWord(s) > 0.995) //not sure about the extremities so didn't run these through
 				p = 0.99;
 			if (probSpamGivenWord(s) < 0.01)
 				p = 0.
 			    //continue; */
-			sum += ((double)Math.log(1-p) - (double)Math.log(p));
+			sum += ((double)Math.log(1-p) - (double)Math.log(p)); //the bayes formula in log form
 		}
 		System.out.println("log sum: " + sum);
 		System.out.println("returned: " + (1/(Math.pow(e, sum) +1)));
-		return (1/(Math.pow(e, sum) +1));
+		return (1/(Math.pow(e, sum) +1)); //the formula that return the probability
 
 	}
 	
-	public boolean isSpam(InputStream in) {
-		return (probSpamGivenEmail(in)>cutoff);
-	}
-	
-	public void addSpamSet(InputStream in) throws IOException{
+	public void addSpamSet(InputStream in) throws IOException{ //detects and stores spam words
 		Set <String> list = new HashSet<String>();
 		Scanner sc = new Scanner(in);
 		while(sc.hasNext()) {
@@ -118,7 +114,7 @@ public class SpamClassifier implements InterfaceClassifier {
 	}
 	
 	@SuppressWarnings("resource")
-	public void addHamSet(InputStream in) throws IOException{
+	public void addHamSet(InputStream in) throws IOException{ //detects and stores ham words
 		Scanner sc = new Scanner(in);
 		Set <String> list = new HashSet<String>();
 		while(sc.hasNext()) {
@@ -135,7 +131,7 @@ public class SpamClassifier implements InterfaceClassifier {
 	}
 	
 	
-	public void addAllSpamEmails(File files) throws IOException {
+	public void addAllSpamEmails(File files) throws IOException { //adding the whole dataset of spam emails
 		for(File f: files.listFiles()) {
 			FileInputStream spam = new FileInputStream(f);
 			spamFiles++;
@@ -143,7 +139,7 @@ public class SpamClassifier implements InterfaceClassifier {
 		}
 	}
 	
-	public void addAllHamEmails(File files) throws IOException {
+	public void addAllHamEmails(File files) throws IOException { //adding the whole dataset of ham emails
 		for(File f: files.listFiles()) {
 			FileInputStream ham = new FileInputStream(f);
 			hamFiles++;
@@ -155,6 +151,10 @@ public class SpamClassifier implements InterfaceClassifier {
 	private static InputStream convert(String word) {
 		return new ByteArrayInputStream(word.getBytes());
 	}
-	
+
+	//helper method
+	public boolean isSpam(InputStream in) {
+		return (probSpamGivenEmail(in)>cutoff);
+	}
 }
   

@@ -16,6 +16,7 @@ public class ActualSpamTest {
 	public void setUp() throws Exception {
 		sc = new SpamClassifier();
 		sc.setSpamCutoff(0.4);
+		
 		//in = new FileInputStream("basicTest/ham/1.txt");
 
 		sc.addAllSpamEmails(new File("datasets/spam"));
@@ -41,7 +42,7 @@ public class ActualSpamTest {
         assertTrue(prob > 0.90);
     }
     
-    @Test
+    
     public void testSpam2() throws Exception {
         double prob = sc.probSpamGivenEmail(new FileInputStream("datasets/spamtest/0017.2003-12-18.GP.spam.txt"));
         assertTrue(prob > 0.90);

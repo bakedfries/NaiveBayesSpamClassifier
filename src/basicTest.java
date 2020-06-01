@@ -22,7 +22,7 @@ public class basicTest {
 		sc.addAllHamEmails(new File("basicTest/ham"));
 	}
 	
-	private static InputStream convert(String word) {
+	private static InputStream convert(String word) { //helper method to convert string to InputStream while testing methods with individual words
 		return new ByteArrayInputStream(word.getBytes());
 	}
 
@@ -38,7 +38,6 @@ public class basicTest {
 		assertEquals(true, sc.hamStore.containsKey("oh"));
 		assertEquals(true, sc.hamStore.containsKey("hi"));
 		assertEquals(true, sc.hamStore.containsKey("mark"));
-
 	}
 
 	@Test
@@ -52,20 +51,12 @@ public class basicTest {
 	public void testprob() throws Exception {
 		double word = sc.probSpamGivenWord("money");
 		assertEquals(1.0, word, threshold);
-		
 	}
-	
-	
+		
 	@Test
 	public void testPleaseSend() throws Exception {
 		double word = sc.probSpamGivenEmail(new FileInputStream ("basicTest/test1"));
 		assertEquals(0.5, word, threshold);
 	}
 	
-    public void testcheck() throws Exception{
-        for (String s : new String[] {"please","hot","mark","in","idk"}) {
-            double p1=sc.probSpamGivenWord(s);
-            System.out.println("P(S|"+s+")="+p1);
-        }
-    }
 }
