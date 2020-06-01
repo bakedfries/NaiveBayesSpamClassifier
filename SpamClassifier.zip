@@ -47,7 +47,7 @@ public class SpamClassifier implements InterfaceClassifier {
 	}
 
 	@Override
-	public void setSpamCutoff(double cut) {
+	public void setSpamCutoff(double cut) { //setting a threshold
 		cutoff = cut;
 	}
 
@@ -62,7 +62,7 @@ public class SpamClassifier implements InterfaceClassifier {
 		double hamGivenWord;
 		spamGivenWord = ((double)getNumOccInSpam(word));
 		hamGivenWord = (double)getNumOccInHam(word);
-		return ((double)spamGivenWord/(spamGivenWord+hamGivenWord));
+		return ((double)spamGivenWord/(spamGivenWord+hamGivenWord)); 
 	}
 	
 	public double probHamGivenWord(String word) {
@@ -82,7 +82,7 @@ public class SpamClassifier implements InterfaceClassifier {
 		while(c.hasNext()) {				
 			String s = c.next();
 			p = probSpamGivenWord(s);
-			if ((!spamStore.containsKey(s)) ||(!hamStore.containsKey(s)))
+			if ((!spamStore.containsKey(s)) ||(!hamStore.containsKey(s))) //conditions to prevent NaN results
 				continue;
 			/*if (probSpamGivenWord(s) > 0.995)
 				p = 0.99;
@@ -91,14 +91,10 @@ public class SpamClassifier implements InterfaceClassifier {
 			    //continue; */
 			sum += ((double)Math.log(1-p) - (double)Math.log(p));
 		}
-		System.out.println("log sum: " + sum);
+		System.out.println("log sum: " + sum); //check the progress of the sum and the end result
 		System.out.println("returned: " + (1/(Math.pow(e, sum) +1)));
 		return (1/(Math.pow(e, sum) +1));
 
-	}
-	
-	public boolean isSpam(InputStream in) {
-		return (probSpamGivenEmail(in)>cutoff);
 	}
 	
 	public void addSpamSet(InputStream in) throws IOException{
@@ -151,7 +147,12 @@ public class SpamClassifier implements InterfaceClassifier {
 		}
 	}
 	
-	//helper class
+	//helper method
+	public boolean isSpam(InputStream in) {
+		return (probSpamGivenEmail(in)>cutoff);
+	}
+	
+	//helper method
 	private static InputStream convert(String word) {
 		return new ByteArrayInputStream(word.getBytes());
 	}
